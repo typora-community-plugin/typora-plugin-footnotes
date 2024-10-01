@@ -6,6 +6,10 @@
 
 - Link Named [^named] should not be changed
 
+- Link 4 [^4] should be indexed as 3
+
+- Link 3 [^3] should be indexed as 4
+
 `Link 2.1 [^2] should not be re-indexed`
 
 ```markdown

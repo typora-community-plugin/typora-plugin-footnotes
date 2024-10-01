@@ -1,10 +1,8 @@
 import './style.scss'
 import { editor } from 'typora'
 import { I18n, Notice, Plugin } from '@typora-community-plugin/core'
+import { reindex } from './indexer'
 
-
-const RE_REF = /\[\^(\d+)\]/g
-const RE_REF_DEF = /\n\r?\[\^(\d+)\]: .+/g
 
 export default class extends Plugin {
 
@@ -36,52 +34,30 @@ export default class extends Plugin {
     const { t } = this.i18n
     const notice = new Notice(t.reindexFootnotesStartMessage, 0)
 
-    const references = editor.nodeMap.foot_list._set.map(node => ({
-      id: node.attributes.ref as string,
-      newId: null,
-      def: '',
-    }))
-      .reduce((o, ref) => (o[ref.id] = ref, o), {} as Record<string, any>)
-
     const { codeMasker, htmlMasker } = this.app.features.markdownEditor.preProcessor
 
     codeMasker.reset()
     htmlMasker.reset()
 
-    let md = editor.getMarkdown()
-    md = codeMasker.mask(md)
-    md = htmlMasker.mask(md)
+    try {
+      let md = editor.getMarkdown()
+      md = codeMasker.mask(md)
+      md = htmlMasker.mask(md)
 
-    let count = 0
-    md = md.replace(RE_REF, (_, id) => {
-      if (references[id]) {
-        if (!references[id].newId) {
-          references[id].newId = String(++count)
-        }
-        return `[^${references[id].newId}]`
-      }
-      return _
-    })
-      .replace(RE_REF_DEF, (_, id) => {
-        if (references[id]) {
-          references[id].def = _
-          return ''
-        }
-        return _
-      })
-      .trimEnd()
-      .concat(Object.values(references).map(ref => ref.def).join(''))
+      md = reindex(md)
 
-    md = htmlMasker.unmask(md)
-    md = codeMasker.unmask(md)
+      md = htmlMasker.unmask(md)
+      md = codeMasker.unmask(md)
 
-    const sourceView = editor.sourceView
-    const isSourceMode = sourceView.inSourceMode
-    !isSourceMode && sourceView.show()
-    sourceView.cm.setValue(md)
-    !isSourceMode && sourceView.hide()
+      // @ts-ignore
+      File.reloadContent(md, false, true, false, true)
 
-    notice.close()
-    new Notice(t.reindexFootnotesEndMessage)
+      notice.close()
+      new Notice(t.reindexFootnotesEndMessage)
+    }
+    catch (error) {
+      notice.message = error.message
+      console.error(error)
+    }
   }
 }
