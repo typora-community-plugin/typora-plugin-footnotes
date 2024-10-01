@@ -1,6 +1,6 @@
 {
   "private": true,
-  "name": "typora-plugin-example",
+  "name": "typora-plugin-footnotes",
   "version": "",
   "description": "",
   "type": "module",

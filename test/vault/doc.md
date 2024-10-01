@@ -1,16 +1,16 @@
 # Footnote
 
-- Link 2 [^2] shoud be indexed as 1
+- Link 2 [^2] should be indexed as 1
 
-- Link 1 [^1] shoud be indexed as 2
+- Link 1 [^1] should be indexed as 2
 
 - Link Named [^named] should not be changed
 
 `Link 2.1 [^2] should not be re-indexed`
 
 ```markdown
-Link 2.2 [^2] shoud not be re-indexed
-Link 3 [^3] shoud not be re-indexed
+Link 2.2 [^2] should not be re-indexed
+Link 3 [^3] should not be re-indexed
 
 [^3]: https://www.example.com/c
 ```
