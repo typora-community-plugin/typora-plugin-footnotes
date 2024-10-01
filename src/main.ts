@@ -1,6 +1,6 @@
 import './style.scss'
 import { editor } from 'typora'
-import { Notice, Plugin } from '@typora-community-plugin/core'
+import { I18n, Notice, Plugin } from '@typora-community-plugin/core'
 
 
 const RE_REF = /\[\^(\d+)\]/g
@@ -8,17 +8,33 @@ const RE_REF_DEF = /\n\r?\[\^(\d+)\]: .+/g
 
 export default class extends Plugin {
 
+  i18n = new I18n({
+    resources: {
+      'en': {
+        reindexFootnotesCommand: 'Re-index numerical footnotes',
+        reindexFootnotesStartMessage: 'Re-indexing the numerical footnotes...',
+        reindexFootnotesEndMessage: 'Footnotes re-indexed!',
+      },
+      'zh-cn': {
+        reindexFootnotesCommand: '重新编号数字脚注',
+        reindexFootnotesStartMessage: '正在重新编号数字脚注……',
+        reindexFootnotesEndMessage: '脚注重新编号完成！',
+      },
+    }
+  })
+
   onload() {
     this.registerCommand({
       id: 'footnote.reindex',
-      title: 'Footnote: Re-index numberical footnote references',
+      title: this.i18n.t.reindexFootnotesCommand,
       scope: 'editor',
       callback: () => this.reindex(),
     })
   }
 
   reindex() {
-    const notice = new Notice('Footnote re-indexing...', 0)
+    const { t } = this.i18n
+    const notice = new Notice(t.reindexFootnotesStartMessage, 0)
 
     const references = editor.nodeMap.foot_list._set.map(node => ({
       id: node.attributes.ref as string,
@@ -66,6 +82,6 @@ export default class extends Plugin {
     !isSourceMode && sourceView.hide()
 
     notice.close()
-    new Notice('Footnote re-indexing done.')
+    new Notice(t.reindexFootnotesEndMessage)
   }
 }
