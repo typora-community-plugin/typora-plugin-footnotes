@@ -1,7 +1,7 @@
 import './style.scss'
 import { editor } from 'typora'
 import { I18n, Notice, Plugin } from '@typora-community-plugin/core'
-import { reindex } from './indexer'
+import { reindex } from './features/indexer'
 
 
 export default class extends Plugin {
