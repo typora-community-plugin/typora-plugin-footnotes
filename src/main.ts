@@ -59,8 +59,10 @@ export default class FootnotesPlugin extends Plugin {
       new Notice(t.reindexFootnotesEndMessage)
     }
     catch (error) {
-      notice.message = error.message
       console.error(error)
+      notice
+        .setMessage('[Footnotes] ' + error.message)
+        .setCloseable(true)
     }
   }
 }
