@@ -4,9 +4,13 @@
 
 这是一个基于 [typora-community-plugin][core] 开发的，适用于 [Typora](https://typora.io) 的插件。
 
-按出现顺序重新编号数字脚注。
-
 ## 预览
+
+脚注标记自动完成：
+
+![](/docs/assets/footnote-suggestion.jpg)
+
+按出现顺序重新编号数字脚注：
 
 ![](/docs/assets/footnote-reindex.gif)
 

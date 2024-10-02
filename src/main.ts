@@ -2,9 +2,10 @@ import './style.scss'
 import { editor } from 'typora'
 import { I18n, Notice, Plugin } from '@typora-community-plugin/core'
 import { reindex } from './features/indexer'
+import { UseSuggest } from './features/use-suggest'
 
 
-export default class extends Plugin {
+export default class FootnotesPlugin extends Plugin {
 
   i18n = new I18n({
     resources: {
@@ -28,6 +29,9 @@ export default class extends Plugin {
       scope: 'editor',
       callback: () => this.reindex(),
     })
+
+    this.register(
+      this.addChild(new UseSuggest(this.app)))
   }
 
   reindex() {
@@ -49,8 +53,7 @@ export default class extends Plugin {
       md = htmlMasker.unmask(md)
       md = codeMasker.unmask(md)
 
-      // @ts-ignore
-      File.reloadContent(md, false, true, false, true)
+      this.app.features.markdownEditor.setMarkdown(md)
 
       notice.close()
       new Notice(t.reindexFootnotesEndMessage)

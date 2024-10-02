@@ -4,9 +4,13 @@ English | [简体中文](./README.zh-CN.md)
 
 This a plugin based on [typora-community-plugin][core] for [Typora](https://typora.io).
 
-Re-index the numerical footnotes.
-
 ## Preview
+
+Footnote marker suggestion:
+
+![](/docs/assets/footnote-suggestion.jpg)
+
+Re-index the numerical footnotes:
 
 ![](/docs/assets/footnote-reindex.gif)
 

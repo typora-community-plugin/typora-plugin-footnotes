@@ -14,7 +14,7 @@ specifiers:
   '@types/jquery': 3.3.1
   '@types/node': 16.18.0
   '@types/typora': npm:@typora-community-plugin/typora-types@^1.0.11
-  '@typora-community-plugin/core': ^2.3.22
+  '@typora-community-plugin/core': ^2.3.28
   archiver: ^5.3.2
   esbuild: ^0.19.2
   esbuild-plugin-typora: npm:@typora-community-plugin/esbuild-plugin-typora@^1.0.12
@@ -41,7 +41,7 @@ devDependencies:
   '@types/jquery': 3.3.1
   '@types/node': 16.18.0
   '@types/typora': /@typora-community-plugin/typora-types/1.0.11
-  '@typora-community-plugin/core': 2.3.22
+  '@typora-community-plugin/core': 2.3.28
   archiver: 5.3.2
   esbuild: 0.19.2
   esbuild-plugin-typora: /@typora-community-plugin/esbuild-plugin-typora/1.0.12
@@ -2270,8 +2270,8 @@ packages:
       '@types/yargs-parser': 21.0.3
     dev: true
 
-  /@typora-community-plugin/core/2.3.22:
-    resolution: {integrity: sha512-wnDQUPCdhVsK9oV7CImj9taADrC/IhAlc+xntnHRrSDhqtnHRXs5VIu9nSd+rp6U3IQx+wyFC4QKCncIq9MMqQ==}
+  /@typora-community-plugin/core/2.3.28:
+    resolution: {integrity: sha512-ziVakbRUafkruCrF6NxvFD1y4DKdeaKVAsEy+6atjCq8dPvQd15ibMi+6fTYyl5Zcx2oYz88WBip2isgF1E7qg==}
     dependencies:
       '@plylrnsdy/decorate.js': 1.0.1
     dev: true
