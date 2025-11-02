@@ -14,6 +14,10 @@ Re-index the numerical footnotes:
 
 ![](/docs/assets/footnote-reindex.gif)
 
+Add footnote defination:
+
+![](/docs/assets/add-footnote.gif)
+
 ## Install
 
 1. Install [typora-community-plugin][core]

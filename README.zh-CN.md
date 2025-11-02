@@ -14,6 +14,10 @@
 
 ![](/docs/assets/footnote-reindex.gif)
 
+添加脚注定义:
+
+![](/docs/assets/add-footnote.gif)
+
 ## 安装
 
 1. 安装 [typora-community-plugin][core]
