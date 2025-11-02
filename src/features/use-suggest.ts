@@ -1,17 +1,18 @@
-import { type App, Component, EditorSuggest } from "@typora-community-plugin/core"
+import { app, type App, Component, EditorSuggest } from "@typora-community-plugin/core"
+import type FootnotesPlugin from "src/main"
 import { editor, TRange } from "typora"
 
 
 export class UseSuggest extends Component {
 
-  constructor(private app: App) {
+  constructor(private app: App, private i18n: FootnotesPlugin['i18n']) {
     super()
   }
 
   onload() {
     const { markdownEditor } = this.app.features
 
-    const suggest = new FootnotesSuggest()
+    const suggest = new FootnotesSuggest(this.i18n)
 
     this.register(
       markdownEditor.suggestion.register(suggest))
@@ -19,6 +20,7 @@ export class UseSuggest extends Component {
 }
 
 type FootnoteDefination = {
+  type: 'ref' | 'op',
   ref: string,
   text: string,
 }
@@ -31,6 +33,10 @@ class FootnotesSuggest extends EditorSuggest<FootnoteDefination> {
   triggerType: TriggerType = TriggerType.NO_MATCHED
 
   suggestions: FootnoteDefination[]
+
+  constructor(private i18n: FootnotesPlugin['i18n']) {
+    super()
+  }
 
   canTrigger(textBefore: string, textAfter: string, range: TRange) {
     if (textBefore.endsWith(this.triggerText)) {
@@ -67,15 +73,18 @@ class FootnotesSuggest extends EditorSuggest<FootnoteDefination> {
 
   getSuggestions(query: string) {
     this.suggestions = editor.nodeMap.foot_list._set
-      .map(({ attributes: { ref, text } }) => ({ ref, text })) as FootnoteDefination[]
+      .map(({ attributes: { ref, text } }) => ({ type: 'ref', ref, text })) as FootnoteDefination[]
 
-    if (!query)
-      return this.suggestions
-    else
-      return this.suggestions.filter(d => {
-        return d.ref.toLowerCase().includes(query) ||
-          d.text.toLowerCase().includes(query)
-      })
+    if (!query) return this.suggestions
+
+    const res = this.suggestions.filter(d => {
+      return d.ref.toLowerCase().includes(query) ||
+        d.text.toLowerCase().includes(query)
+    })
+
+    if (!res.length) res.push({ type: 'op', ref: query, text: this.i18n.t.addFootnotesDef })
+
+    return res
   }
 
   getSuggestionId(suggest: FootnoteDefination) {
@@ -83,7 +92,9 @@ class FootnotesSuggest extends EditorSuggest<FootnoteDefination> {
   }
 
   renderSuggestion(suggest: FootnoteDefination) {
-    const text = `[^${suggest.ref}]: ${suggest.text}`
+    const text = suggest.type === 'op'
+      ? suggest.text
+      : `[^${suggest.ref}]: ${suggest.text}`
     return `<span class="typ-footnote-suggest">${text}</span>`
   }
 
@@ -92,6 +103,10 @@ class FootnotesSuggest extends EditorSuggest<FootnoteDefination> {
   }
 
   beforeApply(suggest: FootnoteDefination) {
+    if (suggest.type === 'op') {
+      setTimeout(() => app.commands.run('typora-community-plugin.footnotes:add-def'), 1000)
+      return suggest.ref
+    }
     if (this.triggerType === TriggerType.EMPTY)
       return `[^${suggest.ref}`
     else
