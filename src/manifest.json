@@ -5,8 +5,8 @@
   "author": "plylrnsdy",
   "authorUrl": "https://github.com/plylrnsdy",
   "repo": "typora-community-plugin/typora-plugin-footnotes",
-  "version": "1.1.1",
+  "version": "1.2.1",
   "minAppVersion": "1.5.0",
-  "minCoreVersion": "2.3.28",
+  "minCoreVersion": "2.3.32",
   "platforms": ["win32", "linux", "darwin"]
 }
