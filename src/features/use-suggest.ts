@@ -82,7 +82,9 @@ class FootnotesSuggest extends EditorSuggest<FootnoteDefination> {
         d.text.toLowerCase().includes(query)
     })
 
-    if (!res.length) res.push({ type: 'op', ref: query, text: this.i18n.t.addFootnotesDef })
+    if (!res.length || !res.find(d => d.ref === query)) {
+      res.unshift({ type: 'op', ref: query, text: this.i18n.t.addFootnotesDef })
+    }
 
     return res
   }
