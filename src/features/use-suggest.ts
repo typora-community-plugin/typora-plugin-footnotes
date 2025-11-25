@@ -12,35 +12,25 @@ export class UseSuggest extends Component {
   onload() {
     const { markdownEditor } = this.app.features
 
-    const suggest = new FootnotesSuggest(this.i18n)
+    this.register(
+      markdownEditor.suggestion.register(new FootnotesActionSuggest(this.i18n)))
 
     this.register(
-      markdownEditor.suggestion.register(suggest))
+      markdownEditor.suggestion.register(new FootnotesSuggest()))
   }
 }
 
-type FootnoteDefination = {
-  type: 'ref' | 'op',
-  ref: string,
-  text: string,
-}
+enum TriggerType { EXTERNAL, INTERNAL, NO_MATCHED }
 
-enum TriggerType { EMPTY, INTERNAL, NO_MATCHED }
-
-class FootnotesSuggest extends EditorSuggest<FootnoteDefination> {
+abstract class FootnotesBaseSuggest<T> extends EditorSuggest<T> {
 
   triggerText = '[^'
-  triggerType: TriggerType = TriggerType.NO_MATCHED
 
-  suggestions: FootnoteDefination[]
-
-  constructor(private i18n: FootnotesPlugin['i18n']) {
-    super()
-  }
+  protected triggerType: TriggerType = TriggerType.NO_MATCHED
 
   canTrigger(textBefore: string, textAfter: string, range: TRange) {
-    if (textBefore.endsWith(this.triggerText)) {
-      this.triggerType = TriggerType.EMPTY
+    if (textBefore.includes(this.triggerText)) {
+      this.triggerType = TriggerType.EXTERNAL
       return true
     }
     if (range.containerNode.closest('.md-footnote')) {
@@ -51,9 +41,8 @@ class FootnotesSuggest extends EditorSuggest<FootnoteDefination> {
     return false
   }
 
-  // @ts-ignore
   findQuery(textBefore: string, textAfter: string, range: TRange) {
-    if (this.triggerType === TriggerType.EMPTY) {
+    if (this.triggerType === TriggerType.EXTERNAL) {
       const matched = textBefore.match(/[\[【]\^([^\]]*)$/) ?? []
       return {
         isMatched: !!matched[0],
@@ -66,27 +55,34 @@ class FootnotesSuggest extends EditorSuggest<FootnoteDefination> {
         query: textBefore,
       }
     }
-    return {
-      isMatched: false,
-    }
+    return { isMatched: false }
   }
+
+  lengthOfTextBeforeToBeReplaced(query: string) {
+    if (this.triggerType === TriggerType.EXTERNAL)
+      return query.length + this.triggerText.length
+    else
+      return query.length
+  }
+}
+
+interface FootnoteDefination {
+  ref: string
+  text: string
+}
+
+class FootnotesSuggest extends FootnotesBaseSuggest<FootnoteDefination> {
+
+  suggestions: FootnoteDefination[]
 
   getSuggestions(query: string) {
     this.suggestions = editor.nodeMap.foot_list._set
-      .map(({ attributes: { ref, text } }) => ({ type: 'ref', ref, text })) as FootnoteDefination[]
+      .map(({ attributes: { ref, text } }) => ({ ref, text })) as FootnoteDefination[]
 
     if (!query) return this.suggestions
 
-    const res = this.suggestions.filter(d => {
-      return d.ref.toLowerCase().includes(query) ||
-        d.text.toLowerCase().includes(query)
-    })
-
-    if (!res.length || !res.find(d => d.ref === query)) {
-      res.unshift({ type: 'op', ref: query, text: this.i18n.t.addFootnotesDef })
-    }
-
-    return res
+    return this.suggestions
+      .filter(d => d.ref.toLowerCase().includes(query) || d.text.toLowerCase().includes(query))
   }
 
   getSuggestionId(suggest: FootnoteDefination) {
@@ -94,9 +90,7 @@ class FootnotesSuggest extends EditorSuggest<FootnoteDefination> {
   }
 
   renderSuggestion(suggest: FootnoteDefination) {
-    const text = suggest.type === 'op'
-      ? suggest.text
-      : `[^${suggest.ref}]: ${suggest.text}`
+    const text = `[^${suggest.ref}]: ${suggest.text}`
     return `<span class="typ-footnote-suggest">${text}</span>`
   }
 
@@ -105,21 +99,52 @@ class FootnotesSuggest extends EditorSuggest<FootnoteDefination> {
   }
 
   beforeApply(suggest: FootnoteDefination) {
-    if (suggest.type === 'op') {
-      setTimeout(() => app.commands.run('typora-community-plugin.footnotes:add-def'), 1000)
-      return suggest.ref
-    }
-    if (this.triggerType === TriggerType.EMPTY)
+    if (this.triggerType === TriggerType.EXTERNAL)
       return `[^${suggest.ref}`
     else
       return suggest.ref
   }
-
-  lengthOfTextBeforeToBeReplaced(query: string) {
-    if (this.triggerType === TriggerType.EMPTY)
-      return query.length + this.triggerText.length
-    else
-      return query.length
-  }
 }
 
+interface FootnotesAction {
+  label: string
+  command: string
+}
+
+class FootnotesActionSuggest extends FootnotesBaseSuggest<FootnotesAction> {
+
+  private _suggestions: FootnotesAction[]
+
+  constructor(i18n: FootnotesPlugin['i18n']) {
+    super()
+    this._suggestions = [
+      { command: 'typora-community-plugin.footnotes:add-def', label: i18n.t.addFootnotesDef },
+    ]
+  }
+
+  getSuggestions(query: string): FootnotesAction[] {
+    if (!query || editor.nodeMap.foot_list._set.find(f => f.attributes.ref === query)) return []
+    return this._suggestions
+  }
+
+  getSuggestionId(suggest: FootnotesAction): string {
+    return suggest.command
+  }
+
+  renderSuggestion(suggest: FootnotesAction) {
+    return `<span class="typ-footnote-suggest">${suggest.label}</span>`
+  }
+
+  lengthOfTextBeforeToBeReplaced(query: string) {
+    return 0
+  }
+
+  getSuggestionById(id: string): FootnotesAction {
+    return this._suggestions.find(s => s.command === id)!
+  }
+
+  beforeApply(suggest: FootnotesAction): string {
+    setTimeout(() => app.commands.run(suggest.command), 1000)
+    return ''
+  }
+}
