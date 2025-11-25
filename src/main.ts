@@ -1,6 +1,6 @@
 import './style.scss'
 import { editor, Node } from 'typora'
-import { decorate, I18n, Notice, openInputBox, Plugin } from '@typora-community-plugin/core'
+import { decorate, I18n, openInputBox, Plugin } from '@typora-community-plugin/core'
 import { reindex } from './features/indexer'
 import { UseSuggest } from './features/use-suggest'
 
@@ -34,7 +34,7 @@ export default class FootnotesPlugin extends Plugin {
       id: 'footnote.reindex',
       title: t.reindexFootnotesCommand,
       scope: 'editor',
-      callback: () => this.reindex(),
+      callback: () => reindex(),
     })
 
     this.registerCommand({
@@ -49,38 +49,6 @@ export default class FootnotesPlugin extends Plugin {
 
     this.register(
       this.addChild(new UseSuggest(this.app, this.i18n)))
-  }
-
-  reindex() {
-    const { t } = this.i18n
-    const notice = new Notice(t.reindexFootnotesStartMessage, 0)
-
-    const { codeMasker, htmlMasker } = this.app.features.markdownEditor.preProcessor
-
-    codeMasker.reset()
-    htmlMasker.reset()
-
-    try {
-      let md = editor.getMarkdown()
-      md = codeMasker.mask(md)
-      md = htmlMasker.mask(md)
-
-      md = reindex(md)
-
-      md = htmlMasker.unmask(md)
-      md = codeMasker.unmask(md)
-
-      this.app.features.markdownEditor.setMarkdown(md)
-
-      notice.close()
-      new Notice(t.reindexFootnotesEndMessage)
-    }
-    catch (error) {
-      console.error(error)
-      notice
-        .setMessage('[Footnotes] ' + error.message)
-        .setCloseable(true)
-    }
   }
 
   addDef($sup: JQuery) {
