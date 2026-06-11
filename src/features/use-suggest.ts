@@ -73,7 +73,7 @@ interface FootnoteDefination {
 
 class FootnotesSuggest extends FootnotesBaseSuggest<FootnoteDefination> {
 
-  suggestions: FootnoteDefination[]
+  suggestions!: FootnoteDefination[]
 
   getSuggestions(query: string) {
     this.suggestions = editor.nodeMap.foot_list._set

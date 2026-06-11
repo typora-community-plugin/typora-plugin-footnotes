@@ -1,5 +1,5 @@
 import { editor } from "typora"
-import { Notice } from "@typora-community-plugin/core"
+import { app, I18n, Notice } from "@typora-community-plugin/core"
 
 
 const RE_REF = /\[\^(\d+)\](?!:)/g
@@ -8,11 +8,11 @@ const RE_REF_DEF = /(?:^|\r?\n)\[\^(\d+)\]: (.*)/g
 // @ts-ignore
 const newline = File.useCRLF ? '\r\n' : '\n'
 
-export function reindex() {
-  const { t } = this.i18n
+export function reindex(i18n: I18n<any>) {
+  const { t } = i18n
   const notice = new Notice(t.reindexFootnotesStartMessage, 0)
 
-  const { codeMasker, htmlMasker } = this.app.features.markdownEditor.preProcessor
+  const { codeMasker, htmlMasker } = app.features.markdownEditor.preProcessor
 
   codeMasker.reset()
   htmlMasker.reset()
@@ -27,12 +27,12 @@ export function reindex() {
     md = htmlMasker.unmask(md)
     md = codeMasker.unmask(md)
 
-    this.app.features.markdownEditor.setMarkdown(md)
+    app.features.markdownEditor.setMarkdown(md)
 
     notice.close()
     new Notice(t.reindexFootnotesEndMessage)
   }
-  catch (error) {
+  catch (error: any) {
     console.error(error)
     notice
       .setMessage('[Footnotes] ' + error.message)

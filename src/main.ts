@@ -34,7 +34,7 @@ export default class FootnotesPlugin extends Plugin {
       id: 'footnote.reindex',
       title: t.reindexFootnotesCommand,
       scope: 'editor',
-      callback: () => reindex(),
+      callback: () => reindex(this.i18n),
     })
 
     this.registerCommand({
