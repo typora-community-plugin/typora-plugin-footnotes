@@ -15,13 +15,13 @@ export default class FootnotesPlugin extends Plugin {
         reindexFootnotesCommand: 'Re-index numerical footnotes',
         reindexFootnotesStartMessage: 'Re-indexing the numerical footnotes...',
         reindexFootnotesEndMessage: 'Footnotes re-indexed!',
-        addFootnotesDef: 'Add Footnote Defination',
+        addFootnotesDef: 'Add footnote description',
       },
       'zh-cn': {
         reindexFootnotesCommand: '重新编号数字脚注',
         reindexFootnotesStartMessage: '正在重新编号数字脚注……',
         reindexFootnotesEndMessage: '脚注重新编号完成！',
-        addFootnotesDef: '添加脚注定义',
+        addFootnotesDef: '添加脚注描述',
       },
     }
   })
