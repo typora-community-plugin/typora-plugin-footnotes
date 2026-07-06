@@ -1,0 +1,6 @@
+{
+  "reindexFootnotesCommand": "Numerische Fußnoten neu indizieren",
+  "reindexFootnotesStartMessage": "Numerische Fußnoten werden neu indiziert...",
+  "reindexFootnotesEndMessage": "Fußnoten neu indiziert!",
+  "addFootnotesDef": "Fußnotenbeschreibung hinzufügen"
+}
