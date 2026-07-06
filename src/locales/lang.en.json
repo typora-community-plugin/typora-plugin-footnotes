@@ -1,0 +1,6 @@
+{
+  "reindexFootnotesCommand": "Re-index numerical footnotes",
+  "reindexFootnotesStartMessage": "Re-indexing the numerical footnotes...",
+  "reindexFootnotesEndMessage": "Footnotes re-indexed!",
+  "addFootnotesDef": "Add footnote description"
+}

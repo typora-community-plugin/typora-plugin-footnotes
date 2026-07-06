@@ -1,29 +1,18 @@
 import './style.scss'
 import { editor, Node } from 'typora'
-import { decorate, I18n, openInputBox, Plugin } from '@typora-community-plugin/core'
+import { decorate, I18n, openInputBox, path, Plugin } from '@typora-community-plugin/core'
 import { reindex } from './features/indexer'
 import { UseSuggest } from './features/use-suggest'
+import * as Locale from './locales/lang.en.json'
+
 
 let mdNode: typeof Node
 let mdNodeText = ''
 
 export default class FootnotesPlugin extends Plugin {
 
-  i18n = new I18n({
-    resources: {
-      'en': {
-        reindexFootnotesCommand: 'Re-index numerical footnotes',
-        reindexFootnotesStartMessage: 'Re-indexing the numerical footnotes...',
-        reindexFootnotesEndMessage: 'Footnotes re-indexed!',
-        addFootnotesDef: 'Add footnote description',
-      },
-      'zh-cn': {
-        reindexFootnotesCommand: '重新编号数字脚注',
-        reindexFootnotesStartMessage: '正在重新编号数字脚注……',
-        reindexFootnotesEndMessage: '脚注重新编号完成！',
-        addFootnotesDef: '添加脚注描述',
-      },
-    }
+  i18n = new I18n<typeof Locale>({
+    localePath: path.join(this.manifest.dir!, 'locales')
   })
 
   onload() {

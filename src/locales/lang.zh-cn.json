@@ -1,0 +1,6 @@
+{
+  "reindexFootnotesCommand": "重新编号数字脚注",
+  "reindexFootnotesStartMessage": "正在重新编号数字脚注……",
+  "reindexFootnotesEndMessage": "脚注重新编号完成！",
+  "addFootnotesDef": "添加脚注描述"
+}
